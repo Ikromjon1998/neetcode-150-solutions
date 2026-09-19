@@ -1,11 +1,18 @@
 name: CI
 
-# This repo ships exercises, not answers, so CI checks two opposite things:
+# This workflow runs in two quite different kinds of repository, and does different things in
+# each.
 #
-#   exercises  — every live file in packages/core-* is still an unsolved stub
-#   solutions  — the reference answers under solutions/ still make all six suites green
+#   The platform (Ikromjon1998/neetcode-150)
+#     - every function in packages/core-* must still be an unsolved stub
+#     - the reference answers under solutions/ must still pass all six suites
 #
-# The second job is what stops reference answers rotting as contracts grow.
+#   A solutions repo (anything made with "Use this template", and any fork)
+#     - the problems YOU have solved must pass
+#     - solved functions are expected, so the stub check is skipped
+#
+# Without that split, a learner's repo would fail CI forever: they commit solutions, and the
+# platform's "everything must be unsolved" rule would reject their own work.
 
 on:
   push:
@@ -18,7 +25,7 @@ concurrency:
 
 jobs:
   contracts:
-    name: Contracts & exercises
+    name: Contracts
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,7 +36,11 @@ jobs:
       - name: Contracts are valid and implemented in all three languages
         run: python3 tools/validate_contracts.py
 
+      # Only the platform's `main` ships unsolved stubs — it is what people copy. A solutions
+      # repo is exactly where solved functions belong, so this is skipped there.
+      # Running on pull requests into main is what stops solutions being merged by accident.
       - name: Every live file is still an unsolved stub
+        if: github.repository == 'Ikromjon1998/neetcode-150' && (github.ref == 'refs/heads/main' || github.base_ref == 'main')
         run: python3 tools/solutions.py status --assert-stubs
 
       - name: Problem briefs are up to date with the contracts
@@ -40,23 +51,16 @@ jobs:
 
   solutions:
     name: Reference solutions still pass
+    if: github.repository == 'Ikromjon1998/neetcode-150'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: pip
+        with: { python-version: "3.12", cache: pip }
       - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: npm
+        with: { node-version: "22", cache: npm }
       - uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.3"
-          extensions: mbstring, json
-          coverage: none
+        with: { php-version: "8.3", extensions: "mbstring, json", coverage: none }
 
       - name: Install
         run: |
@@ -64,10 +68,10 @@ jobs:
           npm ci
           npm run build --workspace @neetcode/core
           (cd packages/core-php && composer install --no-interaction --prefer-dist)
-          (cd apps/api-php && composer install --no-interaction --prefer-dist && cp .env.example .env && php artisan key:generate)
+          (cd apps/api-php && composer install --no-interaction --prefer-dist \
+             && cp .env.example .env && php artisan key:generate)
 
-      # The checkout is disposable here, so apply the answers in place rather than
-      # backing up and restoring.
+      # The checkout is disposable here, so the answers are applied in place.
       - name: Apply reference solutions
         run: |
           python3 tools/solutions.py apply --force
@@ -86,24 +90,42 @@ jobs:
           (cd packages/core-php && ./vendor/bin/phpunit)
           (cd apps/api-php && php artisan test)
 
+  solved:
+    name: Your solved problems
+    if: github.repository != 'Ikromjon1998/neetcode-150'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip }
+      - uses: actions/setup-node@v4
+        with: { node-version: "22", cache: npm }
+      - uses: shivammathur/setup-php@v2
+        with: { php-version: "8.3", extensions: "mbstring, json", coverage: none }
+
+      - name: Install
+        run: |
+          pip install -e "packages/core-python[dev]"
+          npm ci
+          npm run build --workspace @neetcode/core
+          (cd packages/core-php && composer install --no-interaction --prefer-dist)
+
+      # Green means "everything I have solved so far is correct". Problems still untouched are
+      # ignored, so this does not go red simply because the 150 are not finished.
+      - name: Test what you have solved
+        run: python3 tools/test_solved.py
+
   quality:
     name: Lint & types
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: pip
+        with: { python-version: "3.12", cache: pip }
       - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: npm
+        with: { node-version: "22", cache: npm }
       - uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.3"
-          extensions: mbstring, json
-          coverage: none
+        with: { php-version: "8.3", extensions: "mbstring, json", coverage: none }
 
       - name: Install
         run: |
@@ -112,7 +134,7 @@ jobs:
           npm run build --workspace @neetcode/core
           (cd apps/api-php && composer install --no-interaction --prefer-dist)
 
-      # Linting runs against the STUBS, so the exercises themselves stay clean.
+      # In a solutions repo this lints YOUR code too, which is useful feedback.
       - name: Python
         run: |
           ruff check packages/core-python apps/api-python

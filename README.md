@@ -4,21 +4,34 @@ An exercise repo. Every problem ships as a **stub in Python, TypeScript and PHP*
 tests already written and three real web applications already wired up. You write the
 algorithms.
 
+## Start here
+
+Click **"Use this template"** at the top of this page to get your own repository. Then:
+
 ```bash
-git clone … && cd neetcode
+git clone git@github.com:<you>/neetcode-150-solutions.git && cd neetcode-150-solutions
 make setup
-make test      # RED. That is the starting line, not a bug.
-make status    # 0 / 27 implementations written
+make sync                                         # connect to this platform, once
+
+cat docs/problems/0217-contains-duplicate.md      # read the brief
+make try SLUG=contains-duplicate LANG=python      # red → write code → green
 ```
 
-Open [`docs/problems/0001-two-sum.md`](docs/problems/0001-two-sum.md), implement the three
-stubs it names, run `make test` again. Repeat 150 times.
+You solve on `main` in **your own repo**, so your work counts on your GitHub profile. `make
+sync` brings in new problems later and keeps your solutions. Use *fork* only if you want to
+improve the platform itself.
+
+**Full guide: [docs/00-getting-started.md](docs/00-getting-started.md)** covers installing,
+solving, testing, saving your solutions, and pulling in new problems.
+
+On a fresh clone `make test` is red. That is the starting line, not a bug: every algorithm is
+waiting for you.
 
 | | Language | Framework | Port |
 |---|----------|-----------|------|
 | 🐍 | Python 3.11+ | **FastAPI** | 8000 |
 | 🟦 | TypeScript 5 | **NestJS 11** | 3000 |
-| 🐘 | PHP 8.2+ | **Laravel 13** | 8080 |
+| 🐘 | PHP 8.3+ | **Laravel 13** | 8080 |
 
 ---
 
@@ -117,6 +130,9 @@ make status                    which problems you have solved, per language
 make test                      all six suites   (also test-python / -node / -php)
 make run-all                   all three servers at once
 
+make test-solved               test only the problems you have solved
+make sync                      bring in new problems, keeping your solutions
+
 make show SLUG=two-sum         print a worked answer — touches nothing
 make solution SLUG=two-sum     write it over your stub
 make restore                   undo that
@@ -149,7 +165,7 @@ comparison honest.
 
 | | |
 |---|---|
-| [00 — Getting started](docs/00-getting-started.md) | Install, run, solve your first problem |
+| [00 — Getting started](docs/00-getting-started.md) | **Start here.** Install, solve, test, save your work |
 | [01 — Architecture](docs/01-architecture.md) | Why the layers are where they are |
 | [02 — Adding a problem](docs/02-adding-a-problem.md) | Authoring a new exercise |
 | [03 — Python & FastAPI](docs/03-python-fastapi.md) | The stack, idioms, and traps |
@@ -158,6 +174,7 @@ comparison honest.
 | [06 — Language & framework comparison](docs/06-language-comparison.md) | The side-by-side |
 | [07 — Testing strategy](docs/07-testing-strategy.md) | Why one JSON file drives six suites |
 | [08 — Ready-to-paste AI prompts](docs/08-ai-prompts.md) | For Claude Code / Cowork |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Adding problems for other people to solve |
 | [AGENTS.md](AGENTS.md) | Operating manual for humans and AI assistants |
 
 ## Progress
@@ -185,25 +202,30 @@ comparison honest.
 | 17 | Math & Geometry | 0 / 8 |
 | 18 | Bit Manipulation | 0 / 7 |
 
-## Contributing an exercise
+## Your solutions, and everyone else's exercises
 
-New problems are welcome — the scaffolding does most of it:
-
-```bash
-make new-problem ARGS="--id 125 --slug valid-palindrome --title 'Valid Palindrome' \
-  --difficulty easy --topic two-pointers --input 's:string' --returns bool \
-  --approaches reverse-compare,two-pointers"
+```
+this repo (the platform)          your repo (from "Use this template")
+  exercises only, always          your solutions, on main
+  new problems land here  ──────► make sync brings them in, keeping your work
 ```
 
-That writes the contract, stubs, tests, app modules and registry entries across all three
-stacks. Then fill in the contract, write a reference solution, and run `make extract` to turn
-it back into an exercise. Full walkthrough in
-[docs/02-adding-a-problem.md](docs/02-adding-a-problem.md).
+Two repositories, two jobs. This one always hands out clean exercises. Yours holds your
+solutions, counts on your GitHub profile, and stays up to date with `make sync`.
+
+CI knows the difference: here it checks that every function is still unsolved, and in your repo
+it instead runs `make test-solved` — the problems you have finished — so a green tick means
+your work is correct, not that you have finished all 150.
+
+## Contributing
+
+New problems are the most useful contribution, and the scaffolding does most of the work. See
+**[CONTRIBUTING.md](CONTRIBUTING.md)**. The one rule: never commit a solved function to `main`.
 
 ## Requirements
 
-Python 3.11+ · Node 20+ · PHP 8.2+ with `mbstring` · Composer 2
+Python 3.11+ · Node 20+ · PHP 8.3+ with `mbstring` · Composer 2
 
 ## Licence
 
-MIT — use it to teach, fork it, strip out the solutions, whatever helps.
+[MIT](LICENSE). Use it to teach, fork it, build a course on it — whatever helps.

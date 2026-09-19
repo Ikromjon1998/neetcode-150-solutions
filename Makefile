@@ -94,6 +94,14 @@ test-php: ## phpunit: core package + Laravel app
 	@echo "--- php: api ---"
 	cd apps/api-php && php artisan test
 
+.PHONY: sync
+sync: ## Pull new problems from the platform into your solutions repo, keeping your solutions
+	@$(PY) tools/sync_upstream.py $(if $(UPSTREAM),--upstream $(UPSTREAM),)
+
+.PHONY: test-solved
+test-solved: ## Test every problem you have solved, and only those. What CI runs in a solutions repo
+	@$(PY) tools/test_solved.py
+
 .PHONY: try
 try: ## THE LOOP: run one problem in all three languages. SLUG=two-sum [LANG=python]
 	@test -n "$(SLUG)" || { echo "Usage: make try SLUG=two-sum [LANG=python|typescript|php]"; exit 1; }
@@ -177,6 +185,10 @@ verify-solutions: ## Apply every reference answer, run the full suite, then rest
 	 $(PY) tools/solutions.py restore >/dev/null; \
 	 npm run build --workspace @neetcode/core >/dev/null; \
 	 exit $$status
+
+.PHONY: stubs
+stubs: ## Regenerate stub hints from the contracts. Never touches solutions/ or solved files. [SLUG=x]
+	@$(PY) tools/solutions.py restub $(if $(SLUG),--slug $(SLUG),)
 
 .PHONY: extract
 extract: ## Move YOUR implementation into solutions/ and leave a stub. SLUG=x, or omit for all
