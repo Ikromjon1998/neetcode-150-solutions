@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/problem-contract.schema.json",
+  "id": 1,
+  "slug": "two-sum",
+  "title": "Two Sum",
+  "difficulty": "easy",
+  "topic": "arrays-and-hashing",
+  "leetcodeUrl": "https://leetcode.com/problems/two-sum/",
+  "neetcodeUrl": "https://neetcode.io/problems/duplicate-integer",
+  "summary": "Return the indices of the two numbers in `nums` that add up to `target`. Exactly one solution exists and the same element may not be used twice.",
+  "approaches": [
+    {
+      "key": "brute-force",
+      "name": "Nested loops",
+      "time": "O(n^2)",
+      "space": "O(1)",
+      "note": "Check every pair. Kept on purpose as the baseline the optimal approach is measured against."
+    },
+    {
+      "key": "hash-map",
+      "name": "One-pass hash map",
+      "time": "O(n)",
+      "space": "O(n)",
+      "default": true,
+      "note": "Trade space for time: remember every value seen so far and look up the complement in O(1)."
+    }
+  ],
+  "cases": [
+    { "name": "pair at the front",      "input": { "nums": [2, 7, 11, 15], "target": 9 },   "expected": [0, 1] },
+    { "name": "pair after the first",   "input": { "nums": [3, 2, 4], "target": 6 },        "expected": [1, 2] },
+    { "name": "duplicate values",       "input": { "nums": [3, 3], "target": 6 },           "expected": [0, 1] },
+    { "name": "negative numbers",       "input": { "nums": [-3, 4, 3, 90], "target": 0 },   "expected": [0, 2] },
+    { "name": "last two elements",      "input": { "nums": [1, 5, 2, 8], "target": 10 },    "expected": [2, 3] },
+    { "name": "zeros",                  "input": { "nums": [0, 4, 3, 0], "target": 0 },     "expected": [0, 3] }
+  ],
+  "validationCases": [
+    { "name": "fewer than two numbers", "input": { "nums": [1], "target": 1 },              "status": 422 },
+    { "name": "empty array",            "input": { "nums": [], "target": 0 },               "status": 422 },
+    { "name": "missing target",         "input": { "nums": [1, 2] },                        "status": 422 },
+    { "name": "non-integer element",    "input": { "nums": [1, "two"], "target": 3 },       "status": 422 },
+    { "name": "target not a number",    "input": { "nums": [1, 2], "target": "three" },     "status": 422 }
+  ],
+  "notFoundCases": [
+    { "name": "no pair sums to target", "input": { "nums": [1, 2, 3], "target": 100 } }
+  ]
+}

@@ -1,0 +1,15 @@
+"""Request model for `POST /problems/valid-sudoku`.
+
+Strict scalar types on purpose: lax Pydantic would coerce the JSON string `"7"` to `7`, and
+this endpoint would then disagree with the NestJS one, where `@IsInt()` rejects it.
+"""
+
+from __future__ import annotations
+
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt, StrictStr  # noqa: F401
+
+
+class ValidSudokuRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    board: list[list[StrictStr]] = Field(description="TODO: what this field means.")

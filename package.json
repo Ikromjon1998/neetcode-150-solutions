@@ -1,0 +1,24 @@
+{
+  "name": "neetcode-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "NeetCode 150 solved three times over — as a Python/FastAPI, TypeScript/NestJS and PHP/Laravel application.",
+  "workspaces": [
+    "packages/core-ts",
+    "apps/api-node"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "test:core": "npm run test --workspace @neetcode/core",
+    "test:api": "npm run test --workspace @neetcode/api-node",
+    "lint": "npm run lint --workspaces --if-present",
+    "dev": "npm run start:dev --workspace @neetcode/api-node"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

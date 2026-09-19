@@ -1,0 +1,203 @@
+{
+  "$schema": "../schema/problem-contract.schema.json",
+  "id": 347,
+  "slug": "top-k-frequent-elements",
+  "title": "Top K Frequent Elements",
+  "difficulty": "medium",
+  "topic": "arrays-and-hashing",
+  "leetcodeUrl": "https://leetcode.com/problems/top-k-frequent-elements/",
+  "summary": "Return the `k` most frequent values in `nums`. LeetCode accepts any order; this repo pins a canonical one \u2014 descending by frequency, then ascending by value \u2014 so the three implementations can be compared byte for byte.",
+  "approaches": [
+    {
+      "key": "sorting",
+      "name": "Count, then sort by frequency",
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "note": "Tally, then sort the distinct values. The sort dominates, but on the small inputs this problem usually sees it is the fastest of the two."
+    },
+    {
+      "key": "bucket-sort",
+      "name": "Bucket by frequency",
+      "time": "O(n)",
+      "space": "O(n)",
+      "default": true,
+      "note": "A count can never exceed n, so an array of n+1 buckets indexed by frequency replaces the sort entirely. Walking it from the back yields values in descending frequency for free."
+    }
+  ],
+  "cases": [
+    {
+      "name": "textbook",
+      "input": {
+        "nums": [
+          1,
+          1,
+          1,
+          2,
+          2,
+          3
+        ],
+        "k": 2
+      },
+      "expected": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "single element",
+      "input": {
+        "nums": [
+          1
+        ],
+        "k": 1
+      },
+      "expected": [
+        1
+      ]
+    },
+    {
+      "name": "tie broken by value",
+      "input": {
+        "nums": [
+          1,
+          2
+        ],
+        "k": 2
+      },
+      "expected": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "k smaller than ties",
+      "input": {
+        "nums": [
+          4,
+          4,
+          4,
+          5,
+          5,
+          6
+        ],
+        "k": 1
+      },
+      "expected": [
+        4
+      ]
+    },
+    {
+      "name": "zeros count normally",
+      "input": {
+        "nums": [
+          3,
+          0,
+          1,
+          0
+        ],
+        "k": 1
+      },
+      "expected": [
+        0
+      ]
+    },
+    {
+      "name": "negatives tie",
+      "input": {
+        "nums": [
+          -1,
+          -1,
+          2,
+          2,
+          3
+        ],
+        "k": 2
+      },
+      "expected": [
+        -1,
+        2
+      ]
+    },
+    {
+      "name": "k equals distinct count",
+      "input": {
+        "nums": [
+          5,
+          6,
+          6,
+          7,
+          7,
+          7
+        ],
+        "k": 3
+      },
+      "expected": [
+        7,
+        6,
+        5
+      ]
+    },
+    {
+      "name": "k is zero",
+      "input": {
+        "nums": [
+          1,
+          1,
+          2
+        ],
+        "k": 0
+      },
+      "expected": []
+    },
+    {
+      "name": "empty input",
+      "input": {
+        "nums": [],
+        "k": 0
+      },
+      "expected": []
+    }
+  ],
+  "validationCases": [
+    {
+      "name": "missing k",
+      "input": {
+        "nums": [
+          1,
+          2
+        ]
+      },
+      "status": 422
+    },
+    {
+      "name": "missing nums",
+      "input": {
+        "k": 1
+      },
+      "status": 422
+    },
+    {
+      "name": "k is not an integer",
+      "input": {
+        "nums": [
+          1,
+          2
+        ],
+        "k": "two"
+      },
+      "status": 422
+    },
+    {
+      "name": "non-integer element",
+      "input": {
+        "nums": [
+          1,
+          "two"
+        ],
+        "k": 1
+      },
+      "status": 422
+    }
+  ],
+  "notFoundCases": []
+}

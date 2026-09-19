@@ -1,0 +1,45 @@
+/**
+ * 128. Longest Consecutive Sequence
+ *
+ * Return the length of the longest run of consecutive integers present in `nums`. The elements
+ * need not be adjacent in the array, and duplicates do not extend a run.
+ *
+ * https://leetcode.com/problems/longest-consecutive-sequence/
+ *
+ * Each function below is an exercise. Replace the `throw` with your implementation,
+ * then run `make test-node`.
+ *
+ * Stuck? `make show SLUG=longest-consecutive-sequence` prints a worked answer.
+ */
+
+import { defineProblem } from "../define-problem";
+import { UnsolvedError } from "../errors";
+
+export const SLUG = "longest-consecutive-sequence";
+const PATH = "packages/core-ts/src/arrays-and-hashing/longest-consecutive-sequence.ts";
+
+/**
+ * Sort, then walk — target: O(n log n) time, O(n) space.
+ *
+ * Once sorted, a run is a stretch of neighbours differing by exactly one. Duplicates must be
+ * skipped rather than counted, which is the detail this approach gets wrong first.
+ */
+export function longestConsecutiveSequenceSorting(nums: readonly number[]): number {
+  throw new UnsolvedError(SLUG, "sorting", PATH);
+}
+
+/**
+ * Start only at run beginnings — target: O(n) time, O(n) space.
+ *
+ * Put everything in a set, then walk a run only from a value whose predecessor is absent. That
+ * guard is what keeps it O(n) — without it the inner loop re-walks every run from every member and
+ * it degrades to O(n^2).
+ */
+export function longestConsecutiveSequenceHashSet(nums: readonly number[]): number {
+  throw new UnsolvedError(SLUG, "hash-set", PATH);
+}
+
+export const longestConsecutiveSequence = defineProblem(SLUG, {
+  sorting: longestConsecutiveSequenceSorting,
+  "hash-set": longestConsecutiveSequenceHashSet,
+});

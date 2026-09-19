@@ -1,0 +1,5 @@
+{
+  "$comment": "What `nest build` uses. Tests are excluded so they never reach dist/.",
+  "extends": "./tsconfig.json",
+  "exclude": ["node_modules", "dist", "test", "**/*.spec.ts", "**/*.e2e.spec.ts"]
+}

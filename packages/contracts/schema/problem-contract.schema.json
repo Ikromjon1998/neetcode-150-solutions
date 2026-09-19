@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/Ikromjon1998/neetcode-150/packages/contracts/schema/problem-contract.schema.json",
+  "title": "NeetCode problem contract",
+  "description": "One file per problem. This is the single source of truth: the Python, TypeScript and PHP test suites all read it, so a case added here is immediately enforced in three languages.",
+  "type": "object",
+  "required": ["id", "slug", "title", "difficulty", "topic", "summary", "approaches", "cases"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema":      { "type": "string" },
+    "id":           { "type": "integer", "minimum": 1, "description": "LeetCode problem number." },
+    "slug":         { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$", "description": "kebab-case. Becomes the URL segment in all three APIs." },
+    "title":        { "type": "string" },
+    "difficulty":   { "enum": ["easy", "medium", "hard"] },
+    "topic":        { "enum": [
+      "arrays-and-hashing", "two-pointers", "sliding-window", "stack", "binary-search",
+      "linked-list", "trees", "tries", "heap-priority-queue", "backtracking", "graphs",
+      "advanced-graphs", "1d-dynamic-programming", "2d-dynamic-programming", "greedy",
+      "intervals", "math-and-geometry", "bit-manipulation"
+    ] },
+    "leetcodeUrl":  { "type": "string", "format": "uri" },
+    "neetcodeUrl":  { "type": "string", "format": "uri" },
+    "summary":      { "type": "string", "description": "One paragraph. Rendered into the API catalog response and the docs." },
+    "approaches": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Every implemented approach. Each one must exist as a callable in all three core packages and be selectable via the ?approach= query parameter.",
+      "items": {
+        "type": "object",
+        "required": ["key", "name", "time", "space"],
+        "additionalProperties": false,
+        "properties": {
+          "key":     { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+          "name":    { "type": "string" },
+          "time":    { "type": "string", "description": "Big-O, e.g. \"O(n log n)\"." },
+          "space":   { "type": "string" },
+          "note":    { "type": "string" },
+          "default": { "type": "boolean", "description": "Exactly one approach must set this. Used when ?approach= is omitted." }
+        }
+      }
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Happy-path cases. Asserted against the pure core function AND against the HTTP endpoint in each app.",
+      "items": {
+        "type": "object",
+        "required": ["name", "input", "expected"],
+        "additionalProperties": false,
+        "properties": {
+          "name":     { "type": "string" },
+          "input":    { "type": "object" },
+          "expected":  {}
+        }
+      }
+    },
+    "validationCases": {
+      "type": "array",
+      "description": "Malformed input. Asserted at the HTTP layer only — validation belongs to the framework, not to the algorithm.",
+      "items": {
+        "type": "object",
+        "required": ["name", "input", "status"],
+        "additionalProperties": false,
+        "properties": {
+          "name":   { "type": "string" },
+          "input":  { "type": "object" },
+          "status": { "type": "integer", "minimum": 400, "maximum": 599 }
+        }
+      }
+    },
+    "notFoundCases": {
+      "type": "array",
+      "description": "Well-formed input with no answer. The core returns its empty value; the HTTP layer returns 404.",
+      "items": {
+        "type": "object",
+        "required": ["name", "input"],
+        "additionalProperties": false,
+        "properties": {
+          "name":  { "type": "string" },
+          "input": { "type": "object" }
+        }
+      }
+    }
+  }
+}

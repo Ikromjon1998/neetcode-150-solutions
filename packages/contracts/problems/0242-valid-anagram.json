@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/problem-contract.schema.json",
+  "id": 242,
+  "slug": "valid-anagram",
+  "title": "Valid Anagram",
+  "difficulty": "easy",
+  "topic": "arrays-and-hashing",
+  "leetcodeUrl": "https://leetcode.com/problems/valid-anagram/",
+  "summary": "Return true when `t` is an anagram of `s` — that is, when both strings contain exactly the same characters with exactly the same multiplicities.",
+  "approaches": [
+    {
+      "key": "sorting",
+      "name": "Sort both strings",
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "note": "Two anagrams have the same sorted form. Three lines and obviously correct, which is worth something — but the sort dominates, and all three languages must copy the string to sort it."
+    },
+    {
+      "key": "hash-map",
+      "name": "Character frequency count",
+      "time": "O(n)",
+      "space": "O(k)",
+      "default": true,
+      "note": "Count each character in `s`, decrement for each in `t`, and a single pass over the counts decides it. O(k) in the alphabet size, not the input length."
+    }
+  ],
+  "cases": [
+    { "name": "classic anagram",        "input": { "s": "anagram", "t": "nagaram" }, "expected": true },
+    { "name": "not an anagram",         "input": { "s": "rat", "t": "car" },         "expected": false },
+    { "name": "both empty",             "input": { "s": "", "t": "" },               "expected": true },
+    { "name": "different lengths",      "input": { "s": "a", "t": "ab" },            "expected": false },
+    { "name": "same letters wrong counts", "input": { "s": "aacc", "t": "ccac" },    "expected": false },
+    { "name": "identical strings",      "input": { "s": "listen", "t": "listen" },   "expected": true },
+    { "name": "reordered",              "input": { "s": "listen", "t": "silent" },   "expected": true },
+    { "name": "non-ascii",              "input": { "s": "héllo", "t": "olléh" },     "expected": true }
+  ],
+  "validationCases": [
+    { "name": "missing t",        "input": { "s": "abc" },                 "status": 422 },
+    { "name": "missing both",     "input": {},                             "status": 422 },
+    { "name": "s is not a string", "input": { "s": 1, "t": "a" },          "status": 422 },
+    { "name": "t is not a string", "input": { "s": "a", "t": ["a"] },      "status": 422 }
+  ],
+  "notFoundCases": []
+}

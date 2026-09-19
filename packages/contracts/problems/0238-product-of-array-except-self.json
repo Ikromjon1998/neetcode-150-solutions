@@ -1,0 +1,166 @@
+{
+  "$schema": "../schema/problem-contract.schema.json",
+  "id": 238,
+  "slug": "product-of-array-except-self",
+  "title": "Product of Array Except Self",
+  "difficulty": "medium",
+  "topic": "arrays-and-hashing",
+  "leetcodeUrl": "https://leetcode.com/problems/product-of-array-except-self/",
+  "summary": "Return an array where each position holds the product of every element of `nums` except the one at that position. Division is not allowed, which is what makes the problem interesting \u2014 the obvious total-product-divided-by-self approach breaks on zeros anyway.",
+  "approaches": [
+    {
+      "key": "brute-force",
+      "name": "Recompute each product",
+      "time": "O(n^2)",
+      "space": "O(1)",
+      "note": "For every index, multiply everything else. The baseline, and the only one that needs no auxiliary reasoning."
+    },
+    {
+      "key": "prefix-suffix",
+      "name": "Prefix and suffix products",
+      "time": "O(n)",
+      "space": "O(1)",
+      "default": true,
+      "note": "Each answer is (product of everything to the left) x (product of everything to the right). Two passes, reusing the output array as the accumulator, so the extra space is a single running variable."
+    }
+  ],
+  "cases": [
+    {
+      "name": "textbook",
+      "input": {
+        "nums": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "expected": [
+        24,
+        12,
+        8,
+        6
+      ]
+    },
+    {
+      "name": "contains one zero",
+      "input": {
+        "nums": [
+          -1,
+          1,
+          0,
+          -3,
+          3
+        ]
+      },
+      "expected": [
+        0,
+        0,
+        9,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "contains two zeros",
+      "input": {
+        "nums": [
+          0,
+          1,
+          0
+        ]
+      },
+      "expected": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "two elements",
+      "input": {
+        "nums": [
+          2,
+          3
+        ]
+      },
+      "expected": [
+        3,
+        2
+      ]
+    },
+    {
+      "name": "all negative",
+      "input": {
+        "nums": [
+          -1,
+          -2,
+          -3
+        ]
+      },
+      "expected": [
+        6,
+        3,
+        2
+      ]
+    },
+    {
+      "name": "all ones",
+      "input": {
+        "nums": [
+          1,
+          1,
+          1
+        ]
+      },
+      "expected": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "single element",
+      "input": {
+        "nums": [
+          7
+        ]
+      },
+      "expected": [
+        1
+      ]
+    },
+    {
+      "name": "empty",
+      "input": {
+        "nums": []
+      },
+      "expected": []
+    }
+  ],
+  "validationCases": [
+    {
+      "name": "missing nums",
+      "input": {},
+      "status": 422
+    },
+    {
+      "name": "nums is not a list",
+      "input": {
+        "nums": 5
+      },
+      "status": 422
+    },
+    {
+      "name": "non-integer element",
+      "input": {
+        "nums": [
+          1,
+          "two"
+        ]
+      },
+      "status": 422
+    }
+  ],
+  "notFoundCases": []
+}

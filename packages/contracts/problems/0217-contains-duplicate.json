@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema/problem-contract.schema.json",
+  "id": 217,
+  "slug": "contains-duplicate",
+  "title": "Contains Duplicate",
+  "difficulty": "easy",
+  "topic": "arrays-and-hashing",
+  "leetcodeUrl": "https://leetcode.com/problems/contains-duplicate/",
+  "summary": "Return true when any value appears in `nums` more than once, and false when every element is distinct.",
+  "approaches": [
+    {
+      "key": "brute-force",
+      "name": "Compare every pair",
+      "time": "O(n^2)",
+      "space": "O(1)",
+      "note": "The only approach that allocates nothing. On inputs of a handful of elements it wins outright, which is worth seeing before dismissing it."
+    },
+    {
+      "key": "sorting",
+      "name": "Sort, then scan neighbours",
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "note": "Duplicates become adjacent once sorted. Not O(1) space in any of these three languages, since none can sort the caller's array in place without mutating it."
+    },
+    {
+      "key": "hash-set",
+      "name": "Set membership",
+      "time": "O(n)",
+      "space": "O(n)",
+      "default": true,
+      "note": "Return on the first repeat, so the early-exit case is far better than O(n) in practice — a duplicate at index 1 costs two operations regardless of input size."
+    }
+  ],
+  "cases": [
+    { "name": "has a duplicate",         "input": { "nums": [1, 2, 3, 1] },        "expected": true  },
+    { "name": "all distinct",            "input": { "nums": [1, 2, 3, 4] },        "expected": false },
+    { "name": "duplicate at the end",    "input": { "nums": [1, 2, 3, 3] },        "expected": true  },
+    { "name": "duplicate at the start",  "input": { "nums": [5, 5, 1, 2] },        "expected": true  },
+    { "name": "single element",          "input": { "nums": [1] },                 "expected": false },
+    { "name": "empty",                   "input": { "nums": [] },                  "expected": false },
+    { "name": "all identical",           "input": { "nums": [7, 7, 7, 7] },        "expected": true  },
+    { "name": "negatives and zero",      "input": { "nums": [-1, 0, 1, -1] },      "expected": true  },
+    { "name": "distinct negatives",      "input": { "nums": [-3, -2, -1, 0] },     "expected": false }
+  ],
+  "validationCases": [
+    { "name": "missing nums",        "input": {},                       "status": 422 },
+    { "name": "nums is not a list",  "input": { "nums": 5 },            "status": 422 },
+    { "name": "non-integer element", "input": { "nums": [1, "two"] },   "status": 422 }
+  ],
+  "notFoundCases": []
+}

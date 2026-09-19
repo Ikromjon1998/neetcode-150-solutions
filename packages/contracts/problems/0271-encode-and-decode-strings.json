@@ -1,0 +1,179 @@
+{
+  "$schema": "../schema/problem-contract.schema.json",
+  "id": 271,
+  "slug": "encode-and-decode-strings",
+  "title": "Encode and Decode Strings",
+  "difficulty": "medium",
+  "topic": "arrays-and-hashing",
+  "leetcodeUrl": "https://leetcode.com/problems/encode-and-decode-strings/",
+  "summary": "Design an encoding that flattens a list of arbitrary strings into one string, and a decoding that recovers the list exactly. Unlike the other problems here this is a design exercise with two halves, so the endpoint runs the full round trip: it encodes the input and returns what decoding produces. A correct implementation therefore returns its input unchanged \u2014 and any encoding that cannot survive delimiters, empty strings or digits will not.",
+  "approaches": [
+    {
+      "key": "length-prefixed",
+      "name": "Length prefix and sentinel",
+      "time": "O(n)",
+      "space": "O(n)",
+      "default": true,
+      "note": "Write each string as `<length>#<string>`. The length is read before the payload, so the payload is never scanned for a delimiter and may contain anything at all \u2014 including `#` and digits. The standard answer, and the only one here that is unconditionally safe."
+    },
+    {
+      "key": "delimiter-escaped",
+      "name": "Escaped delimiter",
+      "time": "O(n)",
+      "space": "O(n)",
+      "note": "Join on a delimiter, escaping any occurrence of it (and of the escape character) inside the payloads. Correct, but every decode has to scan character by character \u2014 it exists here to show what the length prefix buys you."
+    }
+  ],
+  "cases": [
+    {
+      "name": "textbook",
+      "input": {
+        "strs": [
+          "neet",
+          "code",
+          "love",
+          "you"
+        ]
+      },
+      "expected": [
+        "neet",
+        "code",
+        "love",
+        "you"
+      ]
+    },
+    {
+      "name": "empty list",
+      "input": {
+        "strs": []
+      },
+      "expected": []
+    },
+    {
+      "name": "single empty string",
+      "input": {
+        "strs": [
+          ""
+        ]
+      },
+      "expected": [
+        ""
+      ]
+    },
+    {
+      "name": "several empty strings",
+      "input": {
+        "strs": [
+          "",
+          "",
+          ""
+        ]
+      },
+      "expected": [
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "name": "payload contains the sentinel",
+      "input": {
+        "strs": [
+          "#",
+          "##",
+          "###"
+        ]
+      },
+      "expected": [
+        "#",
+        "##",
+        "###"
+      ]
+    },
+    {
+      "name": "payload looks like a length prefix",
+      "input": {
+        "strs": [
+          "4#test",
+          "1#a"
+        ]
+      },
+      "expected": [
+        "4#test",
+        "1#a"
+      ]
+    },
+    {
+      "name": "payload contains a backslash",
+      "input": {
+        "strs": [
+          "a\\b",
+          "\\",
+          "c"
+        ]
+      },
+      "expected": [
+        "a\\b",
+        "\\",
+        "c"
+      ]
+    },
+    {
+      "name": "whitespace and punctuation",
+      "input": {
+        "strs": [
+          "hello world",
+          " ",
+          ":",
+          "a:b"
+        ]
+      },
+      "expected": [
+        "hello world",
+        " ",
+        ":",
+        "a:b"
+      ]
+    },
+    {
+      "name": "non-ascii",
+      "input": {
+        "strs": [
+          "h\u00e9llo",
+          "\u65e5\u672c\u8a9e",
+          "\ud83d\ude42"
+        ]
+      },
+      "expected": [
+        "h\u00e9llo",
+        "\u65e5\u672c\u8a9e",
+        "\ud83d\ude42"
+      ]
+    }
+  ],
+  "validationCases": [
+    {
+      "name": "missing strs",
+      "input": {},
+      "status": 422
+    },
+    {
+      "name": "strs is not a list",
+      "input": {
+        "strs": "abc"
+      },
+      "status": 422
+    },
+    {
+      "name": "non-string element",
+      "input": {
+        "strs": [
+          "a",
+          1
+        ]
+      },
+      "status": 422
+    }
+  ],
+  "notFoundCases": []
+}

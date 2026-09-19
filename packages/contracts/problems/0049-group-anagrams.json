@@ -1,0 +1,192 @@
+{
+  "$schema": "../schema/problem-contract.schema.json",
+  "id": 49,
+  "slug": "group-anagrams",
+  "title": "Group Anagrams",
+  "difficulty": "medium",
+  "topic": "arrays-and-hashing",
+  "leetcodeUrl": "https://leetcode.com/problems/group-anagrams/",
+  "summary": "Group the strings so that every group holds exactly the mutual anagrams. LeetCode accepts any order; this repo pins a canonical one \u2014 each group sorted ascending, and the groups themselves sorted by their first member \u2014 so the three implementations can be compared byte for byte.",
+  "approaches": [
+    {
+      "key": "sorted-key",
+      "name": "Sorted string as the key",
+      "time": "O(n k log k)",
+      "space": "O(n k)",
+      "note": "Two words are anagrams exactly when their sorted forms match, so the sorted string is a ready-made group key. k is the word length; the log k is the per-word sort."
+    },
+    {
+      "key": "count-key",
+      "name": "Character-count tuple as the key",
+      "time": "O(n k)",
+      "space": "O(n k)",
+      "default": true,
+      "note": "Replace the per-word sort with a 26-slot tally rendered as a key. Linear in the word length, and the clearest place in this repo where the three languages disagree about what may be used as a map key."
+    }
+  ],
+  "cases": [
+    {
+      "name": "textbook",
+      "input": {
+        "strs": [
+          "eat",
+          "tea",
+          "tan",
+          "ate",
+          "nat",
+          "bat"
+        ]
+      },
+      "expected": [
+        [
+          "ate",
+          "eat",
+          "tea"
+        ],
+        [
+          "bat"
+        ],
+        [
+          "nat",
+          "tan"
+        ]
+      ]
+    },
+    {
+      "name": "empty string",
+      "input": {
+        "strs": [
+          ""
+        ]
+      },
+      "expected": [
+        [
+          ""
+        ]
+      ]
+    },
+    {
+      "name": "single letter",
+      "input": {
+        "strs": [
+          "a"
+        ]
+      },
+      "expected": [
+        [
+          "a"
+        ]
+      ]
+    },
+    {
+      "name": "empty input",
+      "input": {
+        "strs": []
+      },
+      "expected": []
+    },
+    {
+      "name": "three anagrams and a loner",
+      "input": {
+        "strs": [
+          "abc",
+          "bca",
+          "cab",
+          "xyz"
+        ]
+      },
+      "expected": [
+        [
+          "abc",
+          "bca",
+          "cab"
+        ],
+        [
+          "xyz"
+        ]
+      ]
+    },
+    {
+      "name": "prefix is not an anagram",
+      "input": {
+        "strs": [
+          "ab",
+          "ba",
+          "abc"
+        ]
+      },
+      "expected": [
+        [
+          "ab",
+          "ba"
+        ],
+        [
+          "abc"
+        ]
+      ]
+    },
+    {
+      "name": "repeated identical words",
+      "input": {
+        "strs": [
+          "aa",
+          "aa",
+          "bb"
+        ]
+      },
+      "expected": [
+        [
+          "aa",
+          "aa"
+        ],
+        [
+          "bb"
+        ]
+      ]
+    },
+    {
+      "name": "differing letter counts",
+      "input": {
+        "strs": [
+          "aab",
+          "aba",
+          "abb"
+        ]
+      },
+      "expected": [
+        [
+          "aab",
+          "aba"
+        ],
+        [
+          "abb"
+        ]
+      ]
+    }
+  ],
+  "validationCases": [
+    {
+      "name": "missing strs",
+      "input": {},
+      "status": 422
+    },
+    {
+      "name": "strs is not a list",
+      "input": {
+        "strs": "abc"
+      },
+      "status": 422
+    },
+    {
+      "name": "non-string element",
+      "input": {
+        "strs": [
+          "a",
+          1
+        ]
+      },
+      "status": 422
+    }
+  ],
+  "notFoundCases": []
+}
