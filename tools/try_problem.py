@@ -24,7 +24,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
 
-from solutions import find, is_stub, pascal, snake  # noqa: E402
+from solutions import find, is_stub, php_filter  # noqa: E402
 
 VENV = ROOT / ".venv/bin"
 
@@ -72,11 +72,14 @@ def main() -> int:
     problem = find(args.slug)
     languages = [args.lang] if args.lang else ["python", "typescript", "php"]
 
+    # Exact selectors from the Problem model — see its comment on why prefix matching breaks
+    # once two-sum-ii, house-robber-ii and friends exist.
     commands = {
-        "python": ([str(VENV / "pytest"), "-p", "no:warnings", "-k", snake(problem.slug)],
+        "python": ([str(VENV / "pytest"), "-p", "no:warnings", problem.test_python],
                    ROOT / "packages/core-python"),
-        "typescript": (["npx", "vitest", "run", "--root", "packages/core-ts", problem.slug], ROOT),
-        "php": (["./vendor/bin/phpunit", "--filter", pascal(problem.slug)],
+        "typescript": (["npx", "vitest", "run", "--root", "packages/core-ts",
+                        problem.test_typescript], ROOT),
+        "php": (["./vendor/bin/phpunit", "--filter", php_filter([problem.test_php_class])],
                 ROOT / "packages/core-php"),
     }
 

@@ -10,6 +10,8 @@ deliberately.
     make solution SLUG=two-sum      copy the reference over your stub (destructive)
     make extract SLUG=two-sum       the reverse: move YOUR implementation into solutions/
                                     and leave a stub behind. Used when authoring a new exercise.
+    make stubs [SLUG=two-sum]       regenerate stub hints after a contract edit. Never touches
+                                    solutions/, never overwrites a solved file.
     make restore                    undo `make solution` — put your own files back
     make verify-solutions           apply every reference, run the full suite, prove they pass
 
@@ -117,6 +119,39 @@ class Problem:
     @property
     def notes(self) -> Path:
         return SOLUTIONS / "notes" / f"{self.id:04d}-{self.slug}.md"
+
+    # ---- test selectors
+    #
+    # Every selector matches ONE problem exactly. Prefix or substring matching looks fine
+    # until the NeetCode pairs arrive — two-sum / two-sum-ii, house-robber / house-robber-ii,
+    # word-search / word-search-ii, jump-game / jump-game-ii — and then `make try two-sum`
+    # silently runs another problem's tests too, usually an unsolved one.
+
+    @property
+    def test_python(self) -> str:
+        """Test file path, relative to packages/core-python. An explicit path cannot over-match."""
+        return f"tests/{snake(self.topic)}/test_{snake(self.slug)}.py"
+
+    @property
+    def test_typescript(self) -> str:
+        """Vitest filter. Vitest matches by path substring, so include the `.test.ts` suffix:
+        `two-sum.test.ts` is not a substring of `two-sum-ii-….test.ts`."""
+        return f"{self.topic}/{self.slug}.test.ts"
+
+    @property
+    def test_php_class(self) -> str:
+        """Test class name. Wrap in `php_filter()` before passing to --filter."""
+        return f"{pascal(self.slug)}Test"
+
+
+def php_filter(classes: list[str]) -> str:
+    r"""PHPUnit --filter matching exactly these test classes.
+
+    PHPUnit matches the filter as a regex against `Namespace\ClassTest::method`. A bare
+    `SumTest::` would also match `TwoSumTest::`, so anchor on the namespace separator:
+    `\(TwoSumTest|ValidAnagramTest)::`.
+    """
+    return "\\\\(" + "|".join(classes) + ")::"
 
 
 def load_problems() -> list[Problem]:
@@ -419,8 +454,13 @@ def cmd_extract(problems: list[Problem], languages: tuple[str, ...], force: bool
             if not live.exists():
                 print(f"  ! {problem.slug} [{language}] no live file at {live.relative_to(ROOT)}")
                 continue
-            if is_stub(live) and not force:
-                print(f"  = {problem.slug} [{language}] already a stub, skipped")
+            # A stub is never extracted, not even with --force. Extracting copies the live file
+            # into solutions/, so extracting a stub would overwrite the worked answer with the
+            # empty exercise and destroy it. To refresh a stub's docstring after a contract
+            # change, use `restub`, which reads the reference and never writes to it.
+            if is_stub(live):
+                print(f"  = {problem.slug} [{language}] already a stub, skipped "
+                      f"(use `restub` to refresh its hint)")
                 continue
 
             source = live.read_text(encoding="utf-8")
@@ -436,6 +476,35 @@ def cmd_extract(problems: list[Problem], languages: tuple[str, ...], force: bool
             rel = str(live.relative_to(ROOT))
             live.write_text(RENDERERS[language](problem, sigs, rel), encoding="utf-8")
             print(f"  + {problem.slug} [{language}] -> {reference.relative_to(ROOT)}, stub written")
+    return 0
+
+
+def cmd_restub(problems: list[Problem], languages: tuple[str, ...]) -> int:
+    """Regenerate stubs from the contract, reading signatures from the reference answer.
+
+    Use it after editing an approach's `name`, `time`, `space` or `note` in a contract, so the
+    stub's docstring hint matches. Two guarantees:
+
+    * it never writes to `solutions/` — the reference is read, not touched;
+    * it never overwrites a solved file — only live files that are still stubs are rewritten,
+      so running it on a learner's branch cannot destroy their work.
+    """
+    for problem in problems:
+        for language in languages:
+            live, reference = problem.live(language), problem.reference(language)
+            if not reference.exists():
+                print(f"  ! {problem.slug} [{language}] no reference to read signatures from")
+                continue
+            if live.exists() and not is_stub(live):
+                print(f"  = {problem.slug} [{language}] solved — left alone")
+                continue
+
+            sigs = EXTRACTORS[language](reference.read_text(encoding="utf-8"))
+            rendered = RENDERERS[language](problem, sigs, str(live.relative_to(ROOT)))
+            if live.exists() and live.read_text(encoding="utf-8") == rendered:
+                continue
+            live.write_text(rendered, encoding="utf-8")
+            print(f"  + {problem.slug} [{language}] stub regenerated")
     return 0
 
 
@@ -547,11 +616,11 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    parser.add_argument("command", choices=["extract", "apply", "restore", "show", "status"])
+    parser.add_argument("command", choices=["extract", "restub", "apply", "restore", "show", "status"])
     parser.add_argument("--slug", help="one problem; omit for all")
     parser.add_argument("--lang", choices=LANGUAGES, help="one language; omit for all three")
     parser.add_argument("--force", action="store_true",
-                        help="apply: overwrite a solved file. extract: re-extract a stub.")
+                        help="apply: overwrite a solved file")
     parser.add_argument("--assert-stubs", action="store_true",
                         help="status: exit non-zero if any live file is implemented (CI guard)")
     args = parser.parse_args()
@@ -564,6 +633,8 @@ def main() -> int:
 
     if args.command == "extract":
         return cmd_extract(problems, languages, args.force)
+    if args.command == "restub":
+        return cmd_restub(problems, languages)
     if args.command == "apply":
         return cmd_apply(problems, languages, args.force)
     if args.command == "show":

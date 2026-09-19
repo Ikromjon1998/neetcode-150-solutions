@@ -8,8 +8,10 @@ on a fresh clone by design.
 
 So work out which job you have been given:
 
-- **"Solve problem X"** → implement the stubs in `packages/core-*` in place. Do not touch
-  `solutions/`.
+- **"Solve problem X"** → implement the stubs in `packages/core-*` in place. **Check
+  `git remote get-url origin` first**: in `Ikromjon1998/neetcode-150` (the platform) solutions
+  must never be committed — the user wants their own repo from "Use this template". In a
+  solutions repo, solving on `main` is correct. Do not touch `solutions/`.
 - **"Add problem X"** → author a new *exercise*: scaffold, fill the contract, implement, then
   `make extract` to move your answer into `solutions/` and leave a stub behind.
 
