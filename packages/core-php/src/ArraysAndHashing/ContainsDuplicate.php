@@ -49,7 +49,14 @@ final class ContainsDuplicate implements ProblemDefinition
      */
     public static function bruteForce(array $nums): bool
     {
-        throw new UnsolvedException(self::SLUG, 'brute-force', self::PATH);
+        for($i = 0; $i < count($nums); $i++) {
+            for($j = $i + 1; $j < count($nums); $j++) {
+                if ($nums[$i] === $nums[$j]) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -60,7 +67,16 @@ final class ContainsDuplicate implements ProblemDefinition
      */
     public static function sorting(array $nums): bool
     {
-        throw new UnsolvedException(self::SLUG, 'sorting', self::PATH);
+        sort($nums);
+        for($i = 0; $i < count($nums); $i++) {
+            if (count($nums) === $i + 1) {
+                return false;
+            }
+            if($nums[$i] === $nums[$i + 1]) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -71,6 +87,13 @@ final class ContainsDuplicate implements ProblemDefinition
      */
     public static function hashSet(array $nums): bool
     {
-        throw new UnsolvedException(self::SLUG, 'hash-set', self::PATH);
+        $hashSet = [];
+        for($i = 0; $i < count($nums); $i++) {
+           $hashSet[$nums[$i]] += 1;
+           if ($hashSet[$nums[$i]] > 1) {
+               return true;
+           }
+        }
+        return false;
     }
 }
