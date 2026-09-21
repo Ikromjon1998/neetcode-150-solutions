@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace NeetCode\Core\ArraysAndHashing;
 
 use NeetCode\Core\Contracts\ProblemDefinition;
-use NeetCode\Core\Exceptions\UnsolvedException;
 
 /**
  * 217. Contains Duplicate
@@ -68,11 +67,8 @@ final class ContainsDuplicate implements ProblemDefinition
     public static function sorting(array $nums): bool
     {
         sort($nums);
-        for($i = 0; $i < count($nums); $i++) {
-            if (count($nums) === $i + 1) {
-                return false;
-            }
-            if($nums[$i] === $nums[$i + 1]) {
+        for($i = 1; $i < count($nums); $i++) {
+            if($nums[$i - 1] === $nums[$i]) {
                 return true;
             }
         }
@@ -89,10 +85,10 @@ final class ContainsDuplicate implements ProblemDefinition
     {
         $hashSet = [];
         for($i = 0; $i < count($nums); $i++) {
-           $hashSet[$nums[$i]] += 1;
-           if ($hashSet[$nums[$i]] > 1) {
-               return true;
-           }
+            if (isset($hashSet[$nums[$i]])) {
+                return true;
+            }
+            $hashSet[$nums[$i]] = true;
         }
         return false;
     }
