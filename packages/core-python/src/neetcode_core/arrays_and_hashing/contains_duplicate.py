@@ -52,9 +52,9 @@ def contains_duplicate_hash_set(nums: list[int]) -> bool:
     Return on the first repeat, so the early-exit case is far better than O(n) in practice — a
     duplicate at index 1 costs two operations regardless of input size.
     """
-    hash_map = {}
+    seen: set[int] = set()
     for num in nums:
-        if num in hash_map:
+        if num in seen:
             return True
-        hash_map[num] = True
+        seen.add(num)
     return False
