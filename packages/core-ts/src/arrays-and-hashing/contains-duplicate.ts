@@ -25,7 +25,14 @@ const PATH = "packages/core-ts/src/arrays-and-hashing/contains-duplicate.ts";
  * which is worth seeing before dismissing it.
  */
 export function containsDuplicateBruteForce(nums: readonly number[]): boolean {
-  throw new UnsolvedError(SLUG, "brute-force", PATH);
+  for(let i = 0; i< nums.length; i++) {
+    for(let j = i +1; j < nums.length; j ++) {
+      if (nums[i] === nums[j]) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 /**
@@ -35,7 +42,13 @@ export function containsDuplicateBruteForce(nums: readonly number[]): boolean {
  * none can sort the caller's array in place without mutating it.
  */
 export function containsDuplicateSorting(nums: readonly number[]): boolean {
-  throw new UnsolvedError(SLUG, "sorting", PATH);
+  let new_array = [...nums].sort((a, b) => a - b);
+  for (let i = 1; i < new_array.length; i ++) {
+    if (new_array[i - 1] === new_array[i]){
+      return true;
+    }
+  }
+  return false;
 }
 
 /**
@@ -45,7 +58,14 @@ export function containsDuplicateSorting(nums: readonly number[]): boolean {
  * duplicate at index 1 costs two operations regardless of input size.
  */
 export function containsDuplicateHashSet(nums: readonly number[]): boolean {
-  throw new UnsolvedError(SLUG, "hash-set", PATH);
+  let hashValue =  new Set<number>();
+  for (const num of nums) {
+    if (hashValue.has(num)) {
+      return true;
+    }
+    hashValue.add(num);
+  }
+  return false;
 }
 
 export const containsDuplicate = defineProblem(SLUG, {
