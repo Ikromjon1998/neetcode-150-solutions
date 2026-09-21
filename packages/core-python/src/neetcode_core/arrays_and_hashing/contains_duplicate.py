@@ -28,8 +28,11 @@ def contains_duplicate_brute_force(nums: list[int]) -> bool:
     The only approach that allocates nothing. On inputs of a handful of elements it wins outright,
     which is worth seeing before dismissing it.
     """
-    raise UnsolvedError(SLUG, "brute-force", PATH)
-
+    for index1, value1 in enumerate(nums):
+        for index2, value2 in enumerate(nums[index1 + 1:], index1 + 1):
+            if value1 == value2:
+                return True
+    return False
 
 @solution(SLUG, approach="sorting")
 def contains_duplicate_sorting(nums: list[int]) -> bool:
@@ -38,8 +41,11 @@ def contains_duplicate_sorting(nums: list[int]) -> bool:
     Duplicates become adjacent once sorted. Not O(1) space in any of these three languages, since
     none can sort the caller's array in place without mutating it.
     """
-    raise UnsolvedError(SLUG, "sorting", PATH)
-
+    new_nums = sorted(nums)
+    for index in range(1, len(new_nums)):
+        if new_nums[index - 1] == new_nums[index]:
+            return True
+    return False
 
 @solution(SLUG, approach="hash-set")
 def contains_duplicate_hash_set(nums: list[int]) -> bool:
@@ -48,4 +54,9 @@ def contains_duplicate_hash_set(nums: list[int]) -> bool:
     Return on the first repeat, so the early-exit case is far better than O(n) in practice — a
     duplicate at index 1 costs two operations regardless of input size.
     """
-    raise UnsolvedError(SLUG, "hash-set", PATH)
+    hash_map = {}
+    for num in nums:
+        if num in hash_map:
+            return True
+        hash_map[num] = True
+    return False
