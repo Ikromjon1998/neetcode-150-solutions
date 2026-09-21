@@ -14,7 +14,6 @@ Stuck? `make show SLUG=contains-duplicate` prints a worked answer.
 
 from __future__ import annotations
 
-from neetcode_core.errors import UnsolvedError
 from neetcode_core.registry import solution
 
 SLUG = "contains-duplicate"
@@ -28,11 +27,12 @@ def contains_duplicate_brute_force(nums: list[int]) -> bool:
     The only approach that allocates nothing. On inputs of a handful of elements it wins outright,
     which is worth seeing before dismissing it.
     """
-    for index1, value1 in enumerate(nums):
-        for index2, value2 in enumerate(nums[index1 + 1:], index1 + 1):
-            if value1 == value2:
+    for index1 in range(len(nums)):
+        for index2 in range(index1 + 1, len(nums)):
+            if nums[index1] == nums[index2]:
                 return True
     return False
+
 
 @solution(SLUG, approach="sorting")
 def contains_duplicate_sorting(nums: list[int]) -> bool:
@@ -42,10 +42,8 @@ def contains_duplicate_sorting(nums: list[int]) -> bool:
     none can sort the caller's array in place without mutating it.
     """
     new_nums = sorted(nums)
-    for index in range(1, len(new_nums)):
-        if new_nums[index - 1] == new_nums[index]:
-            return True
-    return False
+    return any(new_nums[index - 1] == new_nums[index] for index in range(1, len(new_nums)))
+
 
 @solution(SLUG, approach="hash-set")
 def contains_duplicate_hash_set(nums: list[int]) -> bool:
