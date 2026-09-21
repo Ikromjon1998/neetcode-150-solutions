@@ -41,3 +41,6 @@ apps/api-php/database/*.sqlite-journal
 .DS_Store
 *.swp
 .neetcode-backup/
+
+# --- Local tooling config (machine-specific, not shared) ---
+.mcp.json
