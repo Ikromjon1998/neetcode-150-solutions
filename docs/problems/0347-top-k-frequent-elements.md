@@ -21,6 +21,8 @@ Straight from the contract, which is what the tests read:
 
 The full set — 9 cases, 4 invalid-input cases — is in [`0347-top-k-frequent-elements.json`](../../packages/contracts/problems/0347-top-k-frequent-elements.json).
 
+> **New to arrays and hashing?** Read the topic guide first: [`01-arrays-and-hashing.md`](../topics/01-arrays-and-hashing.md). It covers the data structures you will need in all three languages — no problem answers in it.
+
 ## What to implement
 
 | approach | must run in | using | what it is |

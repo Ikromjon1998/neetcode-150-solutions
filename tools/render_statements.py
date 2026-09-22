@@ -3,7 +3,11 @@
 
     make statements
 
-Writes `docs/problems/NNNN-slug.md` from `packages/contracts/problems/NNNN-slug.json`. These
+Two jobs, both driven by the contracts:
+
+1. `docs/problems/NNNN-slug.md` — one exercise brief per problem, written from scratch.
+2. The generated block inside each `docs/topics/NN-<topic>.md` — the list of problems in that
+   topic. The prose around it is hand-written and never touched. These
 are the exercise briefs: what to build, where to build it, what it must cost, and how to check
 it. They deliberately contain **no implementation** — the worked answers and the cross-language
 write-up live under `solutions/`, one explicit click away.
@@ -21,6 +25,24 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 CONTRACTS = ROOT / "packages/contracts/problems"
 OUT = ROOT / "docs/problems"
+TOPICS_DIR = ROOT / "docs/topics"
+
+# The eighteen NeetCode topics in roadmap order; the index is the file-name prefix.
+TOPIC_ORDER = [
+    "arrays-and-hashing", "two-pointers", "sliding-window", "stack", "binary-search",
+    "linked-list", "trees", "tries", "heap-priority-queue", "backtracking", "graphs",
+    "advanced-graphs", "1d-dynamic-programming", "2d-dynamic-programming", "greedy",
+    "intervals", "math-and-geometry", "bit-manipulation",
+]
+DIFFICULTY_ORDER = {"easy": 0, "medium": 1, "hard": 2}
+
+BEGIN = "<!-- generated:problems -->"
+END = "<!-- /generated:problems -->"
+
+
+def topic_doc(topic: str) -> Path:
+    """`arrays-and-hashing` -> docs/topics/01-arrays-and-hashing.md"""
+    return TOPICS_DIR / f"{TOPIC_ORDER.index(topic) + 1:02d}-{topic}.md"
 
 DIFFICULTY_BADGE = {"easy": "🟢 easy", "medium": "🟡 medium", "hard": "🔴 hard"}
 
@@ -83,6 +105,12 @@ def render(data: dict) -> str:
         + (f", {len(data['notFoundCases'])} with no answer" if data.get("notFoundCases") else "")
         + f" — is in [`{pid:04d}-{slug}.json`](../../packages/contracts/problems/{pid:04d}-{slug}.json).",
         "",
+        *([
+            f"> **New to {topic.replace('-', ' ')}?** Read the topic guide first: "
+            f"[`{topic_doc(topic).name}`](../topics/{topic_doc(topic).name}). It covers the "
+            "data structures you will need in all three languages — no problem answers in it.",
+            "",
+        ] if topic_doc(topic).exists() else []),
         "## What to implement",
         "",
         "| approach | must run in | using | what it is |",
@@ -154,16 +182,58 @@ def render(data: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
+def render_topic_block(topic: str, problems: list[dict]) -> str:
+    """The table of problems in one topic. Easiest first, so there is an obvious starting point."""
+    ordered = sorted(problems, key=lambda d: (DIFFICULTY_ORDER.get(d["difficulty"], 9), d["id"]))
+    lines = [
+        f"*{len(ordered)} exercise(s) in this topic, easiest first. "
+        "Generated from the contracts — do not edit by hand.*",
+        "",
+        "| # | problem | difficulty | approaches to implement |",
+        "|---|---------|------------|-------------------------|",
+    ]
+    for data in ordered:
+        name = f"[{data['title']}](../problems/{data['id']:04d}-{data['slug']}.md)"
+        approaches = ", ".join(f"`{a['key']}`" for a in data["approaches"])
+        lines.append(f"| {data['id']} | {name} | {data['difficulty']} | {approaches} |")
+    return "\n".join(lines)
+
+
+def update_topic_docs(by_topic: dict[str, list[dict]]) -> int:
+    """Refresh the generated block in every topic doc that has one. Prose is left alone."""
+    updated = 0
+    for topic, problems in by_topic.items():
+        path = topic_doc(topic)
+        if not path.exists():
+            continue
+        text = path.read_text(encoding="utf-8")
+        if BEGIN not in text or END not in text:
+            print(f"  ! {path.relative_to(ROOT)} has no {BEGIN} block — skipped")
+            continue
+        head, rest = text.split(BEGIN, 1)
+        _, tail = rest.split(END, 1)
+        rebuilt = f"{head}{BEGIN}\n{render_topic_block(topic, problems)}\n{END}{tail}"
+        if rebuilt != text:
+            path.write_text(rebuilt, encoding="utf-8")
+            print(f"  ~ {path.relative_to(ROOT)}")
+            updated += 1
+    return updated
+
+
 def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
     written = 0
+    by_topic: dict[str, list[dict]] = {}
     for path in sorted(CONTRACTS.glob("*.json")):
         data = json.loads(path.read_text(encoding="utf-8"))
         target = OUT / f"{data['id']:04d}-{data['slug']}.md"
         target.write_text(render(data), encoding="utf-8")
         print(f"  + {target.relative_to(ROOT)}")
         written += 1
-    print(f"\n{written} statement(s) rendered.")
+        by_topic.setdefault(data["topic"], []).append(data)
+
+    refreshed = update_topic_docs(by_topic)
+    print(f"\n{written} statement(s) rendered, {refreshed} topic guide(s) refreshed.")
     return 0
 
 
