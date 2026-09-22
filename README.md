@@ -144,6 +144,7 @@ make progress                  your progress through the 150
 
 ```
 docs/problems/            the exercise briefs — start here
+docs/topics/              per-topic language toolbox, read before a topic's exercises
 packages/
   contracts/              JSON: metadata + every test case. The single source of truth.
   core-python/            neetcode_core     ← your Python goes here
@@ -166,6 +167,7 @@ comparison honest.
 | | |
 |---|---|
 | [00 — Getting started](docs/00-getting-started.md) | **Start here.** Install, solve, test, save your work |
+| [Topic guides](docs/topics/) | The language toolbox for a topic — read before its exercises |
 | [01 — Architecture](docs/01-architecture.md) | Why the layers are where they are |
 | [02 — Adding a problem](docs/02-adding-a-problem.md) | Authoring a new exercise |
 | [03 — Python & FastAPI](docs/03-python-fastapi.md) | The stack, idioms, and traps |

@@ -64,6 +64,25 @@ make new-problem ARGS="--id 125 --slug valid-palindrome --title 'Valid Palindrom
   run `make stubs SLUG=<slug>` and `make statements`. `make stubs` never touches `solutions/`
   and never overwrites a solved file.
 
+### Write a topic guide
+
+`docs/topics/NN-<topic>.md` is the page a learner reads *before* attempting a topic. One rule
+governs it:
+
+> **A topic guide teaches the language, never the answer.** Data structures, syntax, costs and
+> per-language traps — yes. How to approach a specific problem — no.
+
+The line is the same one Exercism draws between a *concept* and a *practice exercise*. "PHP has
+no Set type, array keys stand in for one" is vocabulary. "To find duplicates, put them in a set"
+is the answer to an exercise, and it belongs in `solutions/notes/` instead.
+
+Each guide has a `<!-- generated:problems -->` block listing the topic's exercises. That block is
+written by `make statements` — leave it alone and edit the prose around it.
+
+There is deliberately **no automated check** for this rule. Slugs and approach keys appear
+legitimately in a guide's prose (`make try SLUG=…`, "sorting is the other tool here"), so any
+mechanical check produces more false alarms than catches. It is a review rule.
+
 ### Fix a bug or improve the docs
 
 Normal pull requests. Note that `docs/problems/*.md` is **generated**: change the contract and
@@ -84,6 +103,7 @@ make lint                  # ruff, tsc and pint
 - [ ] `make try SLUG=<slug>` passes with the reference answers applied
 - [ ] New problems have six or more real cases and three or more validation cases
 - [ ] `docs/problems/` is regenerated (`make statements`), not hand-edited
+- [ ] A new topic guide contains no problem-specific approach — vocabulary only
 - [ ] New problems include `solutions/notes/NNNN-slug.md`
 
 CI runs all of this on every pull request.
@@ -99,6 +119,7 @@ CI runs all of this on every pull request.
 | `solutions/` | Worked answers, and the cross-language write-ups |
 | `apps/api-*/` | FastAPI, NestJS and Laravel apps that serve each solved problem |
 | `docs/problems/` | Generated problem briefs |
+| `docs/topics/` | Topic guides: the language toolbox to read before a topic |
 | `tools/` | The scaffolding scripts behind `make` |
 
 [AGENTS.md](AGENTS.md) is the full operating manual, and

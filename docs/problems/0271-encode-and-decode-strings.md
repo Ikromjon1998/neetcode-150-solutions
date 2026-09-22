@@ -21,6 +21,8 @@ Straight from the contract, which is what the tests read:
 
 The full set — 9 cases, 3 invalid-input cases — is in [`0271-encode-and-decode-strings.json`](../../packages/contracts/problems/0271-encode-and-decode-strings.json).
 
+> **New to arrays and hashing?** Read the topic guide first: [`01-arrays-and-hashing.md`](../topics/01-arrays-and-hashing.md). It covers the data structures you will need in all three languages — no problem answers in it.
+
 ## What to implement
 
 | approach | must run in | using | what it is |

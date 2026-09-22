@@ -43,11 +43,11 @@ jobs:
         if: github.repository == 'Ikromjon1998/neetcode-150' && (github.ref == 'refs/heads/main' || github.base_ref == 'main')
         run: python3 tools/solutions.py status --assert-stubs
 
-      - name: Problem briefs are up to date with the contracts
+      - name: Generated docs are up to date with the contracts
         run: |
           python3 tools/render_statements.py
-          git diff --exit-code docs/problems/ \
-            || { echo "::error::docs/problems is stale — run 'make statements' and commit"; exit 1; }
+          git diff --exit-code docs/problems/ docs/topics/ \
+            || { echo "::error::generated docs are stale — run 'make statements' and commit"; exit 1; }
 
   solutions:
     name: Reference solutions still pass

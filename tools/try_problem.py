@@ -41,7 +41,7 @@ def summarise(language: str, output: str) -> str:
     patterns = {
         "python": r"(\d+ (?:failed|passed)[^\n]*)",
         "typescript": r"Tests\s+(.*?)\n",
-        "php": r"(Tests: .*|OK \(.*\))",
+        "php": r"(Tests: .*|OK \(.*\)|No tests executed!)",
     }
     match = re.search(patterns[language], output)
     return match.group(1).strip() if match else "(could not parse result)"
@@ -49,6 +49,14 @@ def summarise(language: str, output: str) -> str:
 
 def first_failure(language: str, output: str) -> str | None:
     """The first genuinely useful line of the failure, for a one-glance diagnosis."""
+    # A syntax error means the file never loaded, so no test ran and there is no assertion to
+    # report. It is also never an algorithm mistake, so say so plainly rather than talking
+    # about failing tests.
+    broken = re.search(r"(?:Parse error|syntax error|SyntaxError|IndentationError|error TS\d+)[^\n]*",
+                       output)
+    if broken:
+        return f"syntax error — the file does not compile: {broken.group(0).strip()}"
+
     for line in output.splitlines():
         stripped = line.strip()
         if "UnsolvedError" in stripped or "UnsolvedException" in stripped:
@@ -98,14 +106,21 @@ def main() -> int:
         if code != 0:
             failed = True
             detail = first_failure(language, output)
-            hint = "  -> " + (detail if detail else "see the full output below")
-            print(f"{DIM}{hint}{OFF}")
+            if detail:
+                print(f"{DIM}  -> {detail}{OFF}")
+            else:
+                # Do not claim output is "below" and then print nothing.
+                print(f"{DIM}  -> could not read a result; last lines of the output:{OFF}")
+                for line in [ln for ln in output.strip().splitlines() if ln.strip()][-8:]:
+                    print(f"{DIM}     {line[:150]}{OFF}")
             print(f"{DIM}     edit: {problem.live(language).relative_to(ROOT)}{OFF}"
                   if stub else f"{DIM}     file: {problem.live(language).relative_to(ROOT)}{OFF}")
 
     if failed:
-        print(f"\n{DIM}Full output for one language:  "
-              f"make test-python   (or -node / -php){OFF}")
+        # Name the command for the language that actually failed, not a generic list.
+        suffix = {"python": "python", "typescript": "node", "php": "php"}
+        which = " / ".join(f"make test-{suffix[lang]}" for lang in languages)
+        print(f"\n{DIM}Full output:  {which}{OFF}")
         print(f"{DIM}Stuck:  make show SLUG={problem.slug}{OFF}\n")
     else:
         print(f"\n{GREEN}All three languages pass.{OFF} "

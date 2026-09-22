@@ -120,9 +120,13 @@ your stubs back.
 
 **Start with `contains-duplicate`.** It is the gentlest problem here.
 
-### Read the brief
+### Read the topic guide, then the brief
+
+If a topic is new to you, start with its guide — it lists the data structures you will need in
+all three languages, and the traps each one hides. No answers in it.
 
 ```bash
+cat docs/topics/01-arrays-and-hashing.md
 cat docs/problems/0217-contains-duplicate.md
 ```
 
