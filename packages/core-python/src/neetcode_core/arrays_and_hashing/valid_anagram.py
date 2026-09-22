@@ -36,7 +36,7 @@ def valid_anagram_hash_map(s: str, t: str) -> bool:
     Count each character in `s`, decrement for each in `t`, and a single pass over the counts
     decides it. O(k) in the alphabet size, not the input length.
     """
-    hash_map = {}
+    hash_map: dict[str, int] = {}
     for char in s:
         hash_map[char] = hash_map.get(char, 0) + 1
     for char in t:
