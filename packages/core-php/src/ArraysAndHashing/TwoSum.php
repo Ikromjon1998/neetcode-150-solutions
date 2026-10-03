@@ -6,7 +6,6 @@ namespace NeetCode\Core\ArraysAndHashing;
 
 use NeetCode\Core\Contracts\ProblemDefinition;
 use NeetCode\Core\Exceptions\NoSolutionException;
-use NeetCode\Core\Exceptions\UnsolvedException;
 
 /**
  * 1. Two Sum
@@ -55,8 +54,7 @@ final class TwoSum implements ProblemDefinition
                 }
             }
         }
-        throw new NoSolutionException(self::SLUG, 'No two numbers sum to the        
-    target.');
+        throw new NoSolutionException(self::SLUG, 'No two numbers sum to the target.');
     }
 
     /**
