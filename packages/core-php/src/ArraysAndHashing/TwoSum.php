@@ -47,13 +47,16 @@ final class TwoSum implements ProblemDefinition
      */
     public static function bruteForce(array $nums, int $target): array
     {
-        for($i = 0; $i < count($nums); ++$i) {
-            for ($j = $i + 1; $j < count($nums); ++$j) {
+        $lengthOfArray = count($nums);
+
+        for($i = 0; $i < $lengthOfArray; ++$i) {
+            for ($j = $i + 1; $j < $lengthOfArray; ++$j) {
                 if ($nums[$i] + $nums[$j] === $target) {
                     return [$i, $j];
                 }
             }
         }
+
         throw new NoSolutionException(self::SLUG, 'No two numbers sum to the target.');
     }
 
@@ -65,12 +68,17 @@ final class TwoSum implements ProblemDefinition
     public static function hashMap(array $nums, int $target): array
     {
         $seen = [];
+
         foreach($nums as $i => $num) {
-            if(isset($seen[$target - $num])){
-                return [$seen[$target - $num], $i];
+            $complement = $target - $num;
+
+            if(isset($seen[$complement])) {
+                return [$seen[$complement], $i];
             }
+
             $seen[$num] = $i;
         }
+
         throw new NoSolutionException(self::SLUG, 'No two numbers sum to the target.');
     }
 }
