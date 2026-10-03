@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NeetCode\Core\ArraysAndHashing;
 
 use NeetCode\Core\Contracts\ProblemDefinition;
+use NeetCode\Core\Exceptions\NoSolutionException;
 use NeetCode\Core\Exceptions\UnsolvedException;
 
 /**
@@ -47,7 +48,15 @@ final class TwoSum implements ProblemDefinition
      */
     public static function bruteForce(array $nums, int $target): array
     {
-        throw new UnsolvedException(self::SLUG, 'brute-force', self::PATH);
+        for($i = 0; $i < count($nums); ++$i) {
+            for ($j = $i + 1; $j < count($nums); ++$j) {
+                if ($nums[$i] + $nums[$j] === $target) {
+                    return [$i, $j];
+                }
+            }
+        }
+        throw new NoSolutionException(self::SLUG, 'No two numbers sum to the        
+    target.');
     }
 
     /**
@@ -57,6 +66,13 @@ final class TwoSum implements ProblemDefinition
      */
     public static function hashMap(array $nums, int $target): array
     {
-        throw new UnsolvedException(self::SLUG, 'hash-map', self::PATH);
+        $seen = [];
+        foreach($nums as $i => $num) {
+            if(isset($seen[$target - $num])){
+                return [$seen[$target - $num], $i];
+            }
+            $seen[$num] = $i;
+        }
+        throw new NoSolutionException(self::SLUG, 'No two numbers sum to the target.');
     }
 }
