@@ -25,8 +25,8 @@ export const SLUG = "two-sum";
 export function twoSumBruteForce(nums: readonly number[], target: number): number[] {
   const length = nums.length;
 
-  for(let i = 0; i < length; i++) {
-    for(let j = i + 1; j < length; j++) {
+  for (let i = 0; i < length; i++) {
+    for (let j = i + 1; j < length; j++) {
       if (nums[i]! + nums[j]! === target) {
         return [i, j];
       }
@@ -42,7 +42,7 @@ export function twoSumBruteForce(nums: readonly number[], target: number): numbe
  * Trade space for time: remember every value seen so far and look up the complement in O(1).
  */
 export function twoSumHashMap(nums: readonly number[], target: number): number[] {
-  const seen = new Map<number, number>()
+  const seen = new Map<number, number>();
 
   for (const [numIndex, num] of nums.entries()) {
     const complementIndex = seen.get(target - num);
