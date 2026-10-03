@@ -14,11 +14,10 @@ Stuck? `make show SLUG=two-sum` prints a worked answer.
 
 from __future__ import annotations
 
-from neetcode_core.errors import UnsolvedError
+from neetcode_core.errors import NoSolutionError
 from neetcode_core.registry import solution
 
 SLUG = "two-sum"
-PATH = "packages/core-python/src/neetcode_core/arrays_and_hashing/two_sum.py"
 
 
 @solution(SLUG, approach="brute-force")
@@ -27,7 +26,13 @@ def two_sum_brute_force(nums: list[int], target: int) -> list[int]:
 
     Check every pair. Kept on purpose as the baseline the optimal approach is measured against.
     """
-    raise UnsolvedError(SLUG, "brute-force", PATH)
+    length = len(nums)
+    for i in range(length):
+        for j in range(i + 1, length):
+            if nums[i] + nums[j] == target:
+                return [i, j]
+
+    raise NoSolutionError(SLUG, f"No two entries of nums sum to {target}.")
 
 
 @solution(SLUG, approach="hash-map")
@@ -36,4 +41,12 @@ def two_sum_hash_map(nums: list[int], target: int) -> list[int]:
 
     Trade space for time: remember every value seen so far and look up the complement in O(1).
     """
-    raise UnsolvedError(SLUG, "hash-map", PATH)
+    seen: dict[int, int] = {}
+
+    for idx, num in enumerate(nums):
+        complement = target - num
+        if complement in seen:
+            return [seen[complement], idx]
+        seen[num] = idx
+
+    raise NoSolutionError(SLUG, f"No two entries of nums sum to {target}.")
