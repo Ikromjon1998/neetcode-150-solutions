@@ -13,10 +13,9 @@
  */
 
 import { defineProblem } from "../define-problem";
-import { UnsolvedError } from "../errors";
+import { NoSolutionError } from "../errors";
 
 export const SLUG = "two-sum";
-const PATH = "packages/core-ts/src/arrays-and-hashing/two-sum.ts";
 
 /**
  * Nested loops — target: O(n^2) time, O(1) space.
@@ -24,7 +23,17 @@ const PATH = "packages/core-ts/src/arrays-and-hashing/two-sum.ts";
  * Check every pair. Kept on purpose as the baseline the optimal approach is measured against.
  */
 export function twoSumBruteForce(nums: readonly number[], target: number): number[] {
-  throw new UnsolvedError(SLUG, "brute-force", PATH);
+  const length = nums.length;
+
+  for(let i = 0; i < length; i++) {
+    for(let j = i + 1; j < length; j++) {
+      if (nums[i]! + nums[j]! === target) {
+        return [i, j];
+      }
+    }
+  }
+
+  throw new NoSolutionError(SLUG, `No two entries of nums sum to ${target}.`);
 }
 
 /**
@@ -33,7 +42,15 @@ export function twoSumBruteForce(nums: readonly number[], target: number): numbe
  * Trade space for time: remember every value seen so far and look up the complement in O(1).
  */
 export function twoSumHashMap(nums: readonly number[], target: number): number[] {
-  throw new UnsolvedError(SLUG, "hash-map", PATH);
+  const seen = new Map<number, number>()
+
+  for (const [numIndex, num] of nums.entries()) {
+    const complementIndex = seen.get(target - num);
+    if (complementIndex !== undefined) return [complementIndex, numIndex];
+    seen.set(num, numIndex);
+  }
+
+  throw new NoSolutionError(SLUG, `No two entries of nums sum to ${target}.`);
 }
 
 export const twoSum = defineProblem(SLUG, {
